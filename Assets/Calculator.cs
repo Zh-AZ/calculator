@@ -14,6 +14,7 @@ public class Calculator : MonoBehaviour
     private bool isDivision = false;
     private bool isMinus = false;
     private bool isPlus = false;
+
     private double firstOperand;
     private double secondOperand;
     private double result;
@@ -44,7 +45,7 @@ public class Calculator : MonoBehaviour
 
     public void OnButtonClickEight() {EnterNumbers(8);}
 
-    public void OnButtonClickNine() {EnterNumbers(9);}
+    public void OnButtonClickNine() {EnterNumbers(9);} 
 
     public void OnButtonClickFloatingPoint()
     {
@@ -54,24 +55,44 @@ public class Calculator : MonoBehaviour
         {
             foreach (char letter in DisplayText.text)
             {
-                if(letter == '.')    
+                if(letter == ',')    
                 {
                     isPointExist = false;
                     break; 
                 }
                 else
                 {
-                    isPointExist = true;
+                    isPointExist = true;                   
                 }
             }
 
-            if (isPointExist) { DisplayText.text += "."; }
+            if (isPointExist) { DisplayText.text += ","; }
         }
         else
         {
-            DisplayText.text = "0.";
+            DisplayText.text = "0,";
         }
+
+        //CheckFloatingPoint();
     }
+
+    //private void CheckFloatingPoint()
+    //{
+    //    if(DisplayText.text != string.Empty)
+    //    {
+    //        char[] arrayLetters = DisplayText.text.ToCharArray();
+
+    //        for (int i = 0; i < arrayLetters.Length; i++)
+    //        {
+    //            if (arrayLetters[i] == ',')
+    //            {
+    //                arrayLetters[i] = '.';
+    //            }
+    //        }
+
+    //        DisplayText.text = arrayLetters.ToString();
+    //    }
+    //}
 
     private void EnterNumbers(int num)
     {
@@ -109,9 +130,19 @@ public class Calculator : MonoBehaviour
     {
         if(isMathOperation)
         {
-            double currentNum = Convert.ToDouble(DisplayText.text);
-            double percentageOfNumber = currentNum * 0.10;
-            secondOperand = percentageOfNumber;
+            string tempSecondOperand = secondOperand.ToString();
+
+            if(tempSecondOperand.Contains(","))
+            {
+                secondOperand /= 100;
+            }
+            else
+            {             
+                secondOperand = (secondOperand / 100) * firstOperand;
+            }
+
+            //secondOperand = (secondOperand / 100) * firstOperand;
+            //secondOperand = secondOperand / 100;
         }
     }
 
@@ -144,14 +175,17 @@ public class Calculator : MonoBehaviour
         if (isDivision)
         {
             result = firstOperand / secondOperand;
+            isDivision = false;
         }
         else if (isMinus)
         {
             result = firstOperand - secondOperand;
+            isMinus = false;
         }
         else if (isPlus)
         {
             result = firstOperand + secondOperand;
+            isPlus = false;
         }
         
         DisplayText.text = result.ToString();
