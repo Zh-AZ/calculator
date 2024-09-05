@@ -12,8 +12,10 @@ public class Calculator : MonoBehaviour
     private bool isMathOperation = false;
     private bool isEquals = false;
     private bool isDivision = false;
+    private bool isMultiply = false;
     private bool isMinus = false;
     private bool isPlus = false;
+    private bool isResultPersentage = false;
 
     private double firstOperand;
     private double secondOperand;
@@ -49,24 +51,29 @@ public class Calculator : MonoBehaviour
 
     public void OnButtonClickFloatingPoint()
     {
-        bool isPointExist = false;
+        //bool isPointExist = false;
 
         if (DisplayText.text != string.Empty)
         {
-            foreach (char letter in DisplayText.text)
+            if (!DisplayText.text.Contains(","))
             {
-                if(letter == ',')    
-                {
-                    isPointExist = false;
-                    break; 
-                }
-                else
-                {
-                    isPointExist = true;                   
-                }
+                DisplayText.text += ",";
             }
 
-            if (isPointExist) { DisplayText.text += ","; }
+            //foreach (char letter in DisplayText.text)
+            //{
+            //    if(letter == ',')    
+            //    {
+            //        isPointExist = false;
+            //        break; 
+            //    }
+            //    else
+            //    {
+            //        isPointExist = true;                   
+            //    }
+            //}
+
+            //if (isPointExist) { DisplayText.text += ","; }
         }
         else
         {
@@ -128,22 +135,46 @@ public class Calculator : MonoBehaviour
 
     public void ResultPercentage()
     {
-        if(isMathOperation)
+        isResultPersentage = true;
+
+        Equals();
+
+        //if(isMathOperation)
+        //{
+        //    string tempSecondOperand = secondOperand.ToString();
+
+        //    if(tempSecondOperand.Contains(","))
+        //    {
+        //        secondOperand /= 100;
+        //    }
+        //    else
+        //    {             
+        //        secondOperand = (secondOperand / 100) * firstOperand;
+        //    }
+
+        //    //secondOperand = (secondOperand / 100) * firstOperand;
+        //    //secondOperand = secondOperand / 100;
+        //}
+    }
+
+    private void GetResultPersentagePlusAndMinus()
+    {
+        if (isResultPersentage && isMathOperation)
         {
             string tempSecondOperand = secondOperand.ToString();
 
-            if(tempSecondOperand.Contains(","))
-            {
-                secondOperand /= 100;
-            }
-            else
-            {             
-                secondOperand = (secondOperand / 100) * firstOperand;
-            }
-
-            //secondOperand = (secondOperand / 100) * firstOperand;
-            //secondOperand = secondOperand / 100;
+            if (tempSecondOperand.Contains(",")) { secondOperand /= 100; }
+            else { secondOperand = (secondOperand / 100) * firstOperand; }
         }
+
+        isResultPersentage = false;
+    }
+
+    private void GetResultPersentageMultiplyAndDivision()
+    {
+        if (isResultPersentage && isMathOperation) { secondOperand /= 100; }
+
+        isResultPersentage = false;
     }
 
     public void OnOrReset() 
@@ -155,9 +186,22 @@ public class Calculator : MonoBehaviour
 
     public void Division() { Operator(ref isDivision); }
 
+    public void Multiply() { Operator(ref isMultiply); }
+
     public void Minus() { Operator(ref isMinus); }
 
     public void Plus() { Operator(ref isPlus); }
+
+    public void PositiveOrNegative()
+    {
+        double numState = Convert.ToDouble(DisplayText.text);
+        
+        if (numState < 0) { numState = Math.Abs(numState); }
+        else { numState = -numState; }
+
+        secondOperand = numState;
+        DisplayText.text = numState.ToString();
+    }
 
     private void Operator(ref bool isOperatorDone)
     {
@@ -174,16 +218,25 @@ public class Calculator : MonoBehaviour
     {
         if (isDivision)
         {
+            GetResultPersentageMultiplyAndDivision();
             result = firstOperand / secondOperand;
             isDivision = false;
         }
+        else if (isMultiply)
+        {
+            GetResultPersentageMultiplyAndDivision();
+            result = firstOperand * secondOperand;
+            isMultiply = false;
+        }
         else if (isMinus)
         {
+            GetResultPersentagePlusAndMinus();
             result = firstOperand - secondOperand;
             isMinus = false;
         }
         else if (isPlus)
         {
+            GetResultPersentagePlusAndMinus();
             result = firstOperand + secondOperand;
             isPlus = false;
         }
@@ -195,6 +248,22 @@ public class Calculator : MonoBehaviour
 
         
     }
+
+    public void EraseByOne()
+    {
+        char[] displayNumbers = new char[DisplayText.text.Length - 1];
+
+        for (int i = 0; i < displayNumbers.Length; i++)
+        {
+            displayNumbers[i] = DisplayText.text[i];
+        }
+
+        DisplayText.text = string.Join("", displayNumbers);
+        //DisplayText.text = displayNumbers.ToString();
+
+        if (DisplayText.text == string.Empty) { DisplayText.text = "0"; }
+    }
+
 
     // Update is called once per frame
     void Update()
