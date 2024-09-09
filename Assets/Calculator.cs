@@ -16,6 +16,11 @@ public class Calculator : MonoBehaviour
     private bool isMinus = false;
     private bool isPlus = false;
     private bool isResultPersentage = false;
+    private bool isNextOperation = false;
+
+    private bool isZero = false;
+
+    private bool isAgainPressing = true;
 
     private double firstOperand;
     private double secondOperand;
@@ -51,55 +56,18 @@ public class Calculator : MonoBehaviour
 
     public void OnButtonClickFloatingPoint()
     {
-        //bool isPointExist = false;
-
         if (DisplayText.text != string.Empty)
         {
             if (!DisplayText.text.Contains(","))
             {
                 DisplayText.text += ",";
             }
-
-            //foreach (char letter in DisplayText.text)
-            //{
-            //    if(letter == ',')    
-            //    {
-            //        isPointExist = false;
-            //        break; 
-            //    }
-            //    else
-            //    {
-            //        isPointExist = true;                   
-            //    }
-            //}
-
-            //if (isPointExist) { DisplayText.text += ","; }
         }
         else
         {
             DisplayText.text = "0,";
         }
-
-        //CheckFloatingPoint();
     }
-
-    //private void CheckFloatingPoint()
-    //{
-    //    if(DisplayText.text != string.Empty)
-    //    {
-    //        char[] arrayLetters = DisplayText.text.ToCharArray();
-
-    //        for (int i = 0; i < arrayLetters.Length; i++)
-    //        {
-    //            if (arrayLetters[i] == ',')
-    //            {
-    //                arrayLetters[i] = '.';
-    //            }
-    //        }
-
-    //        DisplayText.text = arrayLetters.ToString();
-    //    }
-    //}
 
     private void EnterNumbers(int num)
     {
@@ -120,6 +88,8 @@ public class Calculator : MonoBehaviour
 
                 DisplayText.text += num;
                 secondOperand = Convert.ToDouble(DisplayText.text);
+
+                if (secondOperand == 0) { isZero = true; }
             }
             else
             {
@@ -131,6 +101,8 @@ public class Calculator : MonoBehaviour
         {
             DisplayText.text = num.ToString();
         }
+
+        isAgainPressing = true;
     }
 
     public void ResultPercentage()
@@ -138,23 +110,6 @@ public class Calculator : MonoBehaviour
         isResultPersentage = true;
 
         Equals();
-
-        //if(isMathOperation)
-        //{
-        //    string tempSecondOperand = secondOperand.ToString();
-
-        //    if(tempSecondOperand.Contains(","))
-        //    {
-        //        secondOperand /= 100;
-        //    }
-        //    else
-        //    {             
-        //        secondOperand = (secondOperand / 100) * firstOperand;
-        //    }
-
-        //    //secondOperand = (secondOperand / 100) * firstOperand;
-        //    //secondOperand = secondOperand / 100;
-        //}
     }
 
     private void GetResultPersentagePlusAndMinus()
@@ -182,15 +137,59 @@ public class Calculator : MonoBehaviour
         DisplayText.text = "0";
         isSecondOperand = true;
         isMathOperation = false;
+        firstOperand = 0;
+        secondOperand = 0;
+        result = 0;
     }
 
-    public void Division() { Operator(ref isDivision); }
+    public void Division() 
+    {
+        if (isNextOperation) Equals();
+        Operator(ref isDivision);
 
-    public void Multiply() { Operator(ref isMultiply); }
+        //if (isAgainPressing)
+        //{
+        //    if (isNextOperation) Equals();
+        //    Operator(ref isDivision);
+        //    isAgainPressing = false;
+        //}
+        //else if (!isAgainPressing)
+        //{
+        //    isDivision = false;
+        //    isNextOperation = false;
+        //}
+    }
 
-    public void Minus() { Operator(ref isMinus); }
+    public void Multiply() 
+    {
+        //if (isAgainPressing)
+        //{
+        //    if (isNextOperation) Equals();
+        //    Operator(ref isMultiply);
+        //    isAgainPressing = false;
+        //}
+        //else if (!isAgainPressing)
+        //{
+        //    isMultiply = false;
+        //    isNextOperation = false;
+        //}
 
-    public void Plus() { Operator(ref isPlus); }
+        if (isNextOperation) Equals();
+        Operator(ref isMultiply);
+
+    }
+
+    public void Minus() 
+    {
+        if (isNextOperation) Equals();
+        Operator(ref isMinus);
+    }
+
+    public void Plus() 
+    {
+        if (isNextOperation) Equals();
+        Operator(ref isPlus);
+    }
 
     public void PositiveOrNegative()
     {
@@ -207,10 +206,16 @@ public class Calculator : MonoBehaviour
     {
         if (DisplayText.text != string.Empty)
         {
+            isDivision = false;
+            isMultiply = false;
+            isPlus = false;
+            isMinus = false;
+            
             isMathOperation = true;
             isOperatorDone = true;
             isSecondOperand = true;
-            firstOperand = Convert.ToDouble(DisplayText.text);
+            isNextOperation= true;
+            //firstOperand = Convert.ToDouble(DisplayText.text);
         }
     }
 
@@ -219,12 +224,26 @@ public class Calculator : MonoBehaviour
         if (isDivision)
         {
             GetResultPersentageMultiplyAndDivision();
+            
+            if (!isZero && secondOperand == 0)
+            {
+                secondOperand = 1;
+                isZero = false;
+            }
+
             result = firstOperand / secondOperand;
             isDivision = false;
         }
         else if (isMultiply)
         {
             GetResultPersentageMultiplyAndDivision();
+
+            if (!isZero && secondOperand == 0)
+            {
+                secondOperand = 1;
+                isZero = false;
+            }
+
             result = firstOperand * secondOperand;
             isMultiply = false;
         }
@@ -240,13 +259,15 @@ public class Calculator : MonoBehaviour
             result = firstOperand + secondOperand;
             isPlus = false;
         }
+
+        firstOperand = result;
+        secondOperand = 0;
         
         DisplayText.text = result.ToString();
         isEquals = true;
-        isMathOperation = true;
+        isMathOperation = false;
         isSecondOperand = false;
-
-        
+        isNextOperation = false;
     }
 
     public void EraseByOne()
@@ -259,9 +280,10 @@ public class Calculator : MonoBehaviour
         }
 
         DisplayText.text = string.Join("", displayNumbers);
-        //DisplayText.text = displayNumbers.ToString();
 
         if (DisplayText.text == string.Empty) { DisplayText.text = "0"; }
+
+        firstOperand = Convert.ToDouble(DisplayText.text);
     }
 
 
