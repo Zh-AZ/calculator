@@ -31,16 +31,16 @@ public class Calculator : MonoBehaviour
 
     }
 
-    public void OnButtonClickZero() { EnterNumbers(0); }
-    public void OnButtonClickOne() { EnterNumbers(1); }
-    public void OnButtonClickTwo() { EnterNumbers(2); }
-    public void OnButtonClickThree() { EnterNumbers(3); }
-    public void OnButtonClickFour() { EnterNumbers(4); }
-    public void OnButtonClickFive() {EnterNumbers(5);}
-    public void OnButtonClickSix() {EnterNumbers(6);}
-    public void OnButtonClickSeven() {EnterNumbers(7);}
-    public void OnButtonClickEight() {EnterNumbers(8);}
-    public void OnButtonClickNine() {EnterNumbers(9);} 
+    public void OnButtonClickZero() { EnterNumber(0); }
+    public void OnButtonClickOne() { EnterNumber(1); }
+    public void OnButtonClickTwo() { EnterNumber(2); }
+    public void OnButtonClickThree() { EnterNumber(3); }
+    public void OnButtonClickFour() { EnterNumber(4); }
+    public void OnButtonClickFive() {EnterNumber(5);}
+    public void OnButtonClickSix() {EnterNumber(6);}
+    public void OnButtonClickSeven() {EnterNumber(7);}
+    public void OnButtonClickEight() {EnterNumber(8);}
+    public void OnButtonClickNine() {EnterNumber(9);} 
 
     public void OnButtonClickFloatingPoint()
     {
@@ -54,7 +54,7 @@ public class Calculator : MonoBehaviour
         }
     }
 
-    private void EnterNumbers(int num)
+    private void EnterNumber(int num)
     {
         if (DisplayText.text != string.Empty && (DisplayText.text != 0.ToString() || isErased))
         {
@@ -291,6 +291,8 @@ public class Calculator : MonoBehaviour
             DisplayText.text = string.Join("", copyNums);
         }
     }
+
+
 
     // Update is called once per frame
     void Update()
